@@ -1,13 +1,17 @@
-FROM alpine:3.15
+FROM golang:1.18-alpine3.15 as build
 
 ARG DNSCONTROL_VERSION=v3.15.0
 
+RUN go install -v github.com/StackExchange/dnscontrol/v3@${DNSCONTROL_VERSION}
+
+FROM alpine:3.15
+
 # hadolint ignore=DL3018
-RUN apk add --no-cache ca-certificates curl libc6-compat
+RUN apk -U --no-cache upgrade && \
+    apk add --no-cache ca-certificates
 
 # Fetch dnscontrol release
-RUN curl -S -f -L -o /usr/local/bin/dnscontrol https://github.com/StackExchange/dnscontrol/releases/download/${DNSCONTROL_VERSION}/dnscontrol-Linux \
-    && chmod +x /usr/local/bin/dnscontrol
+COPY --from=build /go/bin/dnscontrol /usr/local/bin/dnscontrol
 
 WORKDIR /dns
 

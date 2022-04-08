@@ -1,6 +1,7 @@
 FROM golang:1.18-alpine3.15 as build
 
-ARG DNSCONTROL_VERSION=v3.15.0
+# dnscontrol version to install
+ARG DNSCONTROL_VERSION=latest
 
 RUN go install -v github.com/StackExchange/dnscontrol/v3@${DNSCONTROL_VERSION}
 
